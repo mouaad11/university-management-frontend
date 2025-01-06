@@ -10,7 +10,7 @@ import {
 
 import { uniqueId } from "lodash";
 
-const Menuitems = [
+const MenuItemsAdmin = [
   {
     navlabel: true,
     subheader: "Home",
@@ -20,7 +20,7 @@ const Menuitems = [
     id: uniqueId(),
     title: "Dashboard",
     icon: IconLayoutDashboard,
-    href: "/",
+    href: "/admin",
   },
   {
     navlabel: true,
@@ -72,4 +72,4 @@ const Menuitems = [
   },
 ];
 
-export default Menuitems;
+export default MenuItemsAdmin;

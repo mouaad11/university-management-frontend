@@ -29,7 +29,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch("http://localhost:8080/api/auth/signin", {
         method: "POST",
@@ -38,25 +38,51 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         },
         body: JSON.stringify({ username, password }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Échec de la connexion");
       }
-
+  
       const data = await response.json();
-      localStorage.setItem("token", data.jwt); // Store the JWT token
-      router.push("/"); // Redirect to the dashboard
+      localStorage.setItem("token", data.token);
+      
+      // Store additional user info if needed
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("email", data.email);
+      
+      console.log("Login successful:", {
+        token: data.token,
+        role: data.role,
+        username: data.username
+      });
+  
+      // Redirect based on role directly from the signin response
+      switch (data.role) {
+        case "ROLE_ADMIN":
+          router.push("/admin");
+          break;
+        case "ROLE_STUDENT":
+          router.push("/student");
+          break;
+        case "ROLE_PROFESSOR":
+          router.push("/professor");
+          break;
+        default:
+          router.push("/authentication/login");
+      }
     } catch (err) {
-      // Safely handle the error
       if (err instanceof Error) {
-        setError(err.message); // Access the message property safely
+        setError(err.message);
       } else {
-        setError("Une erreur inconnue s'est produite"); // Fallback for unknown errors
+        setError("Une erreur inconnue s'est produite");
       }
       setOpenSnackbar(true);
     }
   };
+  
 
   return (
     <>
