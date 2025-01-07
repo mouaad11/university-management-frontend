@@ -50,6 +50,7 @@ export interface User {
     id: number;
     room: Room;
     professor: Professor;
+    student: Student;
     dayOfWeek: string;
     startTime: string;
     endTime: string;

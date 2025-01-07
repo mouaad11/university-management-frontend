@@ -25,12 +25,16 @@ import {
 } from '@mui/material';
 import { apiService } from '../../../services/api';
 import type { Room, Schedule, RoomRequest, User, Student, Professor, Classe } from '../../../types';
-//i need to fix jason response (@JsonIgnoreProperties) in
-//professors/id/scedules and then focus
-//on the error why schedule.room.roomnumber is undefined
+/*
+i need to fix json response (@JsonIgnoreProperties) in
+professors/id/scedules and then focus
+on the error why schedule.room.roomnumber is undefined
+
+*/
 export default function ProfessorDashboard() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
+  const [professor, setProfessor] = useState<Professor | undefined>(undefined);
   const [openRequestDialog, setOpenRequestDialog] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string>('');
   const [requestDetails, setRequestDetails] = useState({
@@ -46,12 +50,14 @@ export default function ProfessorDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [schedulesData, roomsData] = await Promise.all([
+        const [schedulesData, roomsData, professorData] = await Promise.all([
           apiService.getProfessorSchedules(professorId),
-          apiService.getAvailableRooms()
+          apiService.getAvailableRooms(),
+          apiService.getProfessorById(professorId)
         ]);
         setSchedules(schedulesData.data);
         setAvailableRooms(roomsData.data);
+        setProfessor(professorData.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -67,7 +73,8 @@ export default function ProfessorDashboard() {
         startTime: requestDetails.startTime,
         endTime: requestDetails.endTime,
         subject: requestDetails.subject,
-        type: requestDetails.type
+        type: requestDetails.type,
+        professor: professor
       };
       await apiService.createRoomRequest(request as RoomRequest);
       setOpenRequestDialog(false);

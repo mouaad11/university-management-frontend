@@ -58,6 +58,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const getRequesterName = (request: RoomRequest) => {
+    if (request.professor) {
+      return `${request.professor.firstName ?? 'N/A'} ${request.professor.lastName ?? 'N/A'}`;
+    }
+    if (request.student) {
+      return `${request.student.firstName ?? 'N/A'} ${request.student.lastName ?? 'N/A'}`;
+    }
+    return 'Unknown';
+  };
+
   return (
     <Container maxWidth="lg" className="mt-4">
       <Grid container spacing={4}>
@@ -95,7 +105,7 @@ export default function AdminDashboard() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Professor</TableCell>
+                    <TableCell>Requester</TableCell>
                     <TableCell>Room</TableCell>
                     <TableCell>Date</TableCell>
                     <TableCell>Time</TableCell>
@@ -105,7 +115,7 @@ export default function AdminDashboard() {
                 <TableBody>
                   {pendingRequests.map((request) => (
                     <TableRow key={request.id}>
-                      <TableCell>{`${request.professor.firstName} ${request.professor.lastName}`}</TableCell>
+                      <TableCell>{getRequesterName(request)}</TableCell>
                       <TableCell>{request.room.roomNumber}</TableCell>
                       <TableCell>{request.dayOfWeek}</TableCell>
                       <TableCell>{`${request.startTime} - ${request.endTime}`}</TableCell>
