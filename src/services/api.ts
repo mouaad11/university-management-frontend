@@ -1,6 +1,6 @@
 // services/api.ts
 import axios from 'axios';
-import { Schedule, Room, RoomRequest, Professor, Classe, Student } from '../types';
+import { Schedule, Room, RoomRequest, Professor, Classe, Student, User } from '../types';
 
 const API_URL = 'http://localhost:8080/api';
 
@@ -21,6 +21,9 @@ api.interceptors.request.use((config) => {
 });
 
 export const apiService = {
+  //Users
+  getAllUsers: () => api.get<User[]>('/users'),
+  confirmUserAccount: (userId: number) => api.put(`/confirm-user/${userId}`),
   // Schedules
   getAllSchedules: () => api.get<Schedule[]>('/schedules'),
   getScheduleById: (id: number) => api.get<Schedule>(`/schedules/${id}`),
@@ -48,6 +51,9 @@ export const apiService = {
   getProfessorById: (id: number) => api.get<Professor>(`/professors/${id}`),
   getProfessorsByDepartment: (department: string) => api.get<Professor[]>(`/professors/department/${department}`),
   getProfessorSchedules: (id: number) => api.get<Schedule[]>(`/professors/${id}/schedules`),
+  createProfessor: (professor: Professor) => api.post<Professor>('/professors', professor),
+  updateProfessor: (id: number, professor: Professor) => api.put<Professor>(`/professors/${id}`, professor),
+  deleteProfessor: (id: number) => api.delete(`/professors/${id}`),
 
   // Classes
   getAllClasses: () => api.get<Classe[]>('/classes'),
@@ -55,9 +61,15 @@ export const apiService = {
   createClass: (classe: Classe) => api.post<Classe>('/classes', classe),
   updateClass: (id: number, classe: Classe) => api.put<Classe>(`/classes/${id}`, classe),
   deleteClass: (id: number) => api.delete(`/classes/${id}`),
+  getClassStudents: (id: number) => api.get<Student[]>(`/classes/${id}/students`),
 
-  //Students
-  getStudentById: (id: number) => api.get<Student>(`/students/${id}`)
+  // Students
+  getAllStudents: () => api.get<Student[]>('/students'),
+  getStudentById: (id: number) => api.get<Student>(`/students/${id}`),
+  createStudent: (student: Student) => api.post<Student>('/students', student),
+  updateStudent: (id: number, student: Student) => api.put<Student>(`/students/${id}`, student),
+  deleteStudent: (id: number) => api.delete(`/students/${id}`),
+  getStudentSchedule: (id: number) => api.get<Schedule[]>(`/students/${id}/schedules`),
 };
 
 export default apiService;

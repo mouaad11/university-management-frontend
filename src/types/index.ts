@@ -6,6 +6,7 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
+    isConfirmed:boolean;
   }
   
   export interface Student extends User {
