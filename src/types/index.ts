@@ -38,7 +38,7 @@ export interface User {
   export interface Schedule {
     id: number;
     classe: Classe | null;
-    professor: Professor;
+    professor: Professor | null;
     room: Room;
     dayOfWeek: string;
     startTime: string;

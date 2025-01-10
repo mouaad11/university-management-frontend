@@ -1,6 +1,4 @@
 /*
-put that uncorfirmed user grid with the other three grid counters
-
 I figured out that to create a schedule, the professor id is assigned
 correctly, but we don't want a professor id num, we wanna pass the 
 professor object, so use api call getprofbyid to actually feed formData
@@ -582,7 +580,7 @@ export default function AdminDashboard() {
     <Container maxWidth="lg" className="mt-4">
       <Grid container spacing={4}>
         {/* Summary Cards */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6">Total Rooms</Typography>
@@ -590,7 +588,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6">Pending Requests</Typography>
@@ -598,11 +596,19 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6">Active Schedules</Typography>
               <Typography variant="h3">{schedules.length}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Unconfirmed Users</Typography>
+              <Typography variant="h3">{unconfirmedUsers.length}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -627,15 +633,6 @@ export default function AdminDashboard() {
             </Button>
           </Box>
         </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Unconfirmed Users</Typography>
-              <Typography variant="h3">{unconfirmedUsers.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
         {/* Unconfirmed Users Table */}
         <Grid item xs={12}>
           <Card>
