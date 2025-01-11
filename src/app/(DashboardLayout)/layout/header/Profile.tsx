@@ -75,19 +75,19 @@ const Profile = () => {
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
+          <ListItemText>Mon Profil</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
+          <ListItemText>Mon compte</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <IconListCheck width={20} />
           </ListItemIcon>
-          <ListItemText>My Tasks</ListItemText>
+          <ListItemText>Mes Tâches</ListItemText>
         </MenuItem>
         <Box mt={1} py={1} px={2}>
           <Button
@@ -96,7 +96,7 @@ const Profile = () => {
             fullWidth
             onClick={handleLogout} // Add onClick handler for logout
           >
-            Logout
+            Se déconnecter
           </Button>
         </Box>
       </Menu>

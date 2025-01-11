@@ -35,10 +35,12 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel
+  InputLabel,
+  SelectChangeEvent
 } from '@mui/material';
 import { apiService } from '../../../services/api';
 import type { Room, RoomRequest, Schedule, Student, Professor, Classe, User } from '../../../types';
+import { isClassElement } from 'typescript';
 
 // Form types for better type safety
 type ScheduleForm = Omit<Schedule, 'id' | 'professor' | 'room' | 'classe'> & {
@@ -63,6 +65,9 @@ const initialFormState = {
   schedule: {
     classeId: '' ,
     professorId: '',
+    professor: null as Professor |null,
+    room: null as Room |null,
+    classe: null as Classe |null,
     roomId: '',
     dayOfWeek: '',
     startTime: '',
@@ -77,7 +82,8 @@ const initialFormState = {
     firstName: '',
     lastName: '',
     studentId: '',
-    classeId: ''
+    classeId: '',
+    classe: null as Classe |null
   },
   professor: {
     username: '',
@@ -113,6 +119,8 @@ export default function AdminDashboard() {
   const [unconfirmedUsers, setUnconfirmedUsers] = useState<User[]>([]);
   const [dialogType, setDialogType] = useState<DialogFormType>('schedule');
   const [formData, setFormData] = useState<any>(initialFormState.schedule);
+  const [classeData, setSelectedClasse] = useState<Classe | undefined>(undefined);
+  const [professorData, setSelectedProfessor] = useState<Professor | undefined>(undefined);
 
   // Constants
   const timeslots = [
@@ -144,7 +152,8 @@ export default function AdminDashboard() {
         setStudents(studentsData.data);
         setProfessors(professorsData.data);
         setClasses(classesData.data);
-         // Filter only unconfirmed users
+
+        // Filter only unconfirmed users
         setUnconfirmedUsers(usersData.data.filter(user => !user.isConfirmed));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -201,6 +210,7 @@ export default function AdminDashboard() {
   
       switch (dialogType) {
         case 'schedule':
+          console.log(formData);
           await apiService.createSchedule(formData);
           break;
         case 'student':
@@ -277,59 +287,149 @@ export default function AdminDashboard() {
     );
   };
 
+
+  const fetchClassName = async (classeId: number) => {
+    try {
+      const response = await apiService.getClassById(classeId);
+      setSelectedClasse(response.data); // Access the 'data' property to get the Classe object
+    } catch (error) {
+      console.error('Error fetching class:', error);
+    }
+  };
+
+  const fetchProfessorName = async (professorId: number) => {
+    try {
+      const response = await apiService.getProfessorById(professorId);
+      setSelectedProfessor(response.data); // Access the 'data' property to get the Classe object
+    } catch (error) {
+      console.error('Error fetching professor:', error);
+    }
+  };
   // Render dialog content based on type
   const renderDialogContent = () => {
+    const handleProfessorChange = async (event: SelectChangeEvent) => {
+      const selectedProfessorId = Number(event.target.value);
+    
+      // First, update the professorId in the form
+      handleFormChange(event);
+    
+      try {
+        // Fetch the complete professor object
+        const professorResponse = await apiService.getProfessorById(selectedProfessorId);
+        const professor = professorResponse.data;
+    
+        // Update the formData to include both professorId and professor object
+        setFormData((prevFormData: any) => ({
+          ...prevFormData,
+          professorId: selectedProfessorId,
+          professor: professor
+        }));
+      } catch (error) {
+        console.error('Error fetching professor details:', error);
+        // Handle error appropriately
+      }
+    };
+    const handleRoomChange = async (event: SelectChangeEvent) => {
+      const selectedRoomId = Number(event.target.value);
+    
+      // First, update the professorId in the form
+      handleFormChange(event);
+    
+      try {
+        // Fetch the complete professor object
+        const roomResponse = await apiService.getRoomById(selectedRoomId);
+        const room = roomResponse.data;
+    
+        // Update the formData to include both professorId and professor object
+        setFormData((prevFormData: any) => ({
+          ...prevFormData,
+          roomId: selectedRoomId,
+          room: room
+        }));
+      } catch (error) {
+        console.error('Error fetching room details:', error);
+        // Handle error appropriately
+      }
+    };
+    const handleClasseChange = async (event: SelectChangeEvent) => {
+      const selectedClasseId = Number(event.target.value);
+    
+      // First, update the professorId in the form
+      handleFormChange(event);
+    
+      try {
+        // Fetch the complete professor object
+        const classeResponse = await apiService.getClassById(selectedClasseId);
+        const classe = classeResponse.data;
+    
+        // Update the formData to include both professorId and professor object
+        setFormData((prevFormData: any) => ({
+          ...prevFormData,
+          classeId: selectedClasseId,
+          classe: classe
+        }));
+      } catch (error) {
+        console.error('Error fetching classe details:', error);
+        // Handle error appropriately
+      }
+    };
+  
     switch (dialogType) {
       case 'schedule':
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-           <FormControl fullWidth>
-  <InputLabel>Class</InputLabel>
-  <Select
-    name="classeId"
-    value={formData.classeId}
-    label="Class"
-    onChange={handleFormChange}
-  >
-    {classes.map((classe) => (
-      <MenuItem key={classe.id} value={classe.id}>
-        {classe.name}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
-
-<FormControl fullWidth>
-  <InputLabel>Professor</InputLabel>
-  <Select
-    name="professorId"
-    value={formData.professorId}
-    label="Professor"
-    onChange={handleFormChange}
-  >
-    {professors.map((professor) => (
-      <MenuItem key={professor.id} value={professor.id}>
-        {`${professor.firstName} ${professor.lastName}`}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
-
-<FormControl fullWidth>
-  <InputLabel>Room</InputLabel>
-  <Select
-    name="roomId"
-    value={formData.roomId}
-    label="Room"
-    onChange={handleFormChange}
-  >
-    {rooms.map((room) => (
-      <MenuItem key={room.id} value={room.id}>
-        {room.roomNumber}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
+            {/* Class Select */}
+            <FormControl fullWidth>
+              <InputLabel>Class</InputLabel>
+              <Select
+                name="classeId"
+                value={formData.classeId}
+                label="Class"
+                onChange={handleClasseChange} // Updated handler to fetch class object
+              >
+                {classes.map((classe) => (
+                  <MenuItem key={classe.id} value={classe.id}>
+                    {classe.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+  
+            {/* Professor Select */}
+            <FormControl fullWidth>
+              <InputLabel>Professor</InputLabel>
+              <Select
+                name="professorId"
+                value={formData.professorId}
+                label="Professor"
+                onChange={handleProfessorChange}
+              >
+                {professors.map((professor) => (
+                  <MenuItem key={professor.id} value={professor.id}>
+                    {`${professor.firstName} ${professor.lastName}`}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+  
+            {/* Room Select */}
+            <FormControl fullWidth>
+              <InputLabel>Room</InputLabel>
+              <Select
+                name="roomId"
+                value={formData.roomId}
+                label="Room"
+                onChange={handleRoomChange}
+              >
+                {rooms.map((room) => (
+                  <MenuItem key={room.id} value={room.id}>
+                    {room.roomNumber}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+  
+            {/* Day of Week Select */}
             <FormControl fullWidth>
               <InputLabel>Day of Week</InputLabel>
               <Select
@@ -345,6 +445,8 @@ export default function AdminDashboard() {
                 ))}
               </Select>
             </FormControl>
+  
+            {/* Start Time Input */}
             <TextField
               name="startTime"
               label="Start Time"
@@ -352,8 +454,10 @@ export default function AdminDashboard() {
               value={formData.startTime}
               onChange={handleFormChange}
               InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }}
+              inputProps={{ step: 300 }} // 5 min intervals
             />
+  
+            {/* End Time Input */}
             <TextField
               name="endTime"
               label="End Time"
@@ -361,14 +465,18 @@ export default function AdminDashboard() {
               value={formData.endTime}
               onChange={handleFormChange}
               InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }}
+              inputProps={{ step: 300 }} // 5 min intervals
             />
+  
+            {/* Subject Input */}
             <TextField
               name="subject"
               label="Subject"
               value={formData.subject}
               onChange={handleFormChange}
             />
+  
+            {/* Type Select */}
             <FormControl fullWidth>
               <InputLabel>Type</InputLabel>
               <Select
@@ -384,7 +492,7 @@ export default function AdminDashboard() {
             </FormControl>
           </Box>
         );
-
+  
       case 'student':
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -438,7 +546,7 @@ export default function AdminDashboard() {
                 name="classeId"
                 value={formData.classeId}
                 label="Class"
-                onChange={handleFormChange}
+                onChange={handleClasseChange}
               >
                 {classes.map((classe) => (
                   <MenuItem key={classe.id} value={classe.id}>

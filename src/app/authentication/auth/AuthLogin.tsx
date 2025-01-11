@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -26,10 +26,26 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const router = useRouter();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const storedMessage = localStorage.getItem('registrationSuccessMessage');
+    if (storedMessage) {
+      setMessage(storedMessage);
+      setOpenSnackbar(true);
+      localStorage.removeItem('registrationSuccessMessage'); // Clear the message
+    }
+  }, []);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+    setMessage(''); // Clear the message to prevent re-rendering the Snackbar
+  };
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch("http://localhost:8080/api/auth/signin", {
         method: "POST",
@@ -38,25 +54,40 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         },
         body: JSON.stringify({ username, password }),
       });
-  
+    
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Échec de la connexion");
+        let errorData: { message?: string } = {};
+        try {
+          errorData = await response.json(); // Parse JSON response
+        } catch (jsonError) {
+          console.error("Failed to parse error response JSON:", jsonError);
+        }
+    
+        // Handle the error message
+        if (errorData.message) {
+          console.log(errorData.message);
+          throw new Error(
+            errorData.message === "PendingConfirmation"
+              ? "Your account is pending confirmation. Please wait for admin approval."
+              : errorData.message
+          );
+        } else {
+          throw new Error("Échec de la connexion");
+        }
       }
-  
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      
+
       // Store additional user info if needed
       localStorage.setItem("role", data.role);
       localStorage.setItem("username", data.username);
       localStorage.setItem("userId", data.id);
       localStorage.setItem("email", data.email);
-      
+
       console.log("Login successful:", {
         token: data.token,
         role: data.role,
-        username: data.username
+        username: data.username,
       });
   
       // Redirect based on role directly from the signin response
@@ -86,6 +117,16 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
   return (
     <>
+       {/* Render Snackbar only if a message exists */}
+      {message && (
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+          message={message}
+        />
+      )}
+
       {title ? (
         <Typography fontWeight="700" variant="h2" mb={1}>
           {title}
@@ -172,13 +213,15 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       </form>
 
       {subtitle}
-
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={() => setOpenSnackbar(false)}
       >
-        <Alert severity="error" onClose={() => setOpenSnackbar(false)}>
+        <Alert
+          severity={error.includes("pending confirmation") ? "info" : "error"} // Use "info" for pending confirmation message
+          onClose={() => setOpenSnackbar(false)}
+        >
           {error}
         </Alert>
       </Snackbar>

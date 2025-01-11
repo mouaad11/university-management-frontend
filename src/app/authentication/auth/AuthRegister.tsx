@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { apiService } from '../../../services/api';
+
 import {
   Box,
   Typography,
@@ -14,6 +16,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField";
+import type { Classe } from '../../../types';
 
 interface registerType {
   title?: string;
@@ -34,10 +37,29 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const router = useRouter();
+  const [classes, setClasses] = useState<Classe[]>([]); // State to store fetched classes
+
+
+  // Fetch classes when the component mounts
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const response = await apiService.getAllClasses();
+        
+        // Assuming apiService uses Axios:
+        setClasses(response.data); // Use the data directly from the Axios response
+  
+      } catch (err) {
+        console.error("Error fetching classes:", err);
+      }
+    };
+  
+    fetchClasses();
+  }, []);  
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch("http://localhost:8080/api/auth/signup", {
         method: "POST",
@@ -56,16 +78,22 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
           department: role === "ROLE_PROFESSOR" ? department : undefined,
         }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Échec de l'inscription");
       }
+  
+      // Registration successful
+setError("Inscription réussie! Veuillez attendre la confirmation de l'administrateur.");
+setOpenSnackbar(true);
 
-      const data = await response.json();
-      setError("Inscription réussie! Veuillez attendre la confirmation de l'administrateur.");
-      setOpenSnackbar(true);
-      router.push("/authentication/login"); // Redirect to the login page
+// Delay the redirection to allow the snackbar to display
+setTimeout(() => {
+  localStorage.setItem('registrationSuccessMessage', 'Inscription réussie! Veuillez attendre la confirmation de l\'administrateur.');
+  router.push("/authentication/login"); // Redirect to login page
+}, 3000); // Adjust delay as needed
+
     } catch (err) {
       // Safely handle the error
       if (err instanceof Error) {
@@ -229,7 +257,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                   required
                 />
 
-                <Typography
+<Typography
                   variant="subtitle1"
                   fontWeight={600}
                   component="label"
@@ -237,16 +265,24 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                   mb="5px"
                   mt="25px"
                 >
-                  ID Classe
+                  Classe
                 </Typography>
-                <CustomTextField
-                  id="classId"
-                  variant="outlined"
-                  fullWidth
-                  value={classId}
-                  onChange={(e: any) => setClassId(e.target.value)}
-                  required
-                />
+                <FormControl fullWidth>
+                  <InputLabel>Classe</InputLabel>
+                  <Select
+                    id="classId"
+                    value={classId}
+                    label="Classe"
+                    onChange={(e) => setClassId(e.target.value)} // Update classId state
+                    required
+                  >
+                    {classes.map((classe) => (
+                      <MenuItem key={classe.id} value={classe.id}>
+                        {classe.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </>
             )}
 
@@ -288,14 +324,14 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
       {subtitle}
 
       <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-      >
-        <Alert severity={error.includes("réussie") ? "success" : "error"} onClose={() => setOpenSnackbar(false)}>
-          {error}
-        </Alert>
-      </Snackbar>
+  open={openSnackbar}
+  autoHideDuration={6000}
+  onClose={() => setOpenSnackbar(false)}
+>
+  <Alert severity={error.includes("réussie") ? "success" : "error"} onClose={() => setOpenSnackbar(false)}>
+    {error}
+  </Alert>
+</Snackbar>
     </>
   );
 };

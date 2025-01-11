@@ -54,7 +54,7 @@ const Login2 = () => {
                     color="textSecondary"
                     mb={1}
                   >
-                    Vos Campagnes Sociales
+                    Gestion d'occupation des salles ENSA Berrechid
                   </Typography>
                 }
                 subtitle={
@@ -69,7 +69,7 @@ const Login2 = () => {
                       variant="h6"
                       fontWeight="500"
                     >
-                      Nouveau sur Modernize?
+                      Nouveau sur la plateforme?
                     </Typography>
                     <Typography
                       component={Link}

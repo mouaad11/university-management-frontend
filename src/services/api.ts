@@ -27,7 +27,7 @@ export const apiService = {
   // Schedules
   getAllSchedules: () => api.get<Schedule[]>('/schedules'),
   getScheduleById: (id: number) => api.get<Schedule>(`/schedules/${id}`),
-  createSchedule: (schedule: Schedule) => api.post<Schedule>('/schedules', schedule),
+  createSchedule: (data: any) => api.post<any>('/schedules', data),
   updateSchedule: (id: number, schedule: Schedule) => api.put<Schedule>(`/schedules/${id}`, schedule),
   deleteSchedule: (id: number) => api.delete(`/schedules/${id}`),
   getAvailableRooms: () => api.get<Room[]>('/schedules/available-rooms'),

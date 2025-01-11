@@ -18,58 +18,36 @@ const MenuItemsAdmin = [
 
   {
     id: uniqueId(),
-    title: "Dashboard",
+    title: "Tableau de bord",
     icon: IconLayoutDashboard,
-    href: "/",
+    href: "/admin",
   },
-  {
-    navlabel: true,
-    subheader: "Utilities",
-  },
-  {
-    id: uniqueId(),
-    title: "Typography",
-    icon: IconTypography,
-    href: "/utilities/typography",
-  },
-  {
-    id: uniqueId(),
-    title: "Shadow",
-    icon: IconCopy,
-    href: "/utilities/shadow",
-  },
+  
   {
     navlabel: true,
     subheader: "Auth",
   },
+  /*
   {
     id: uniqueId(),
-    title: "Login",
+    title: "Se déconnecter",
+    icon: IconDoorExit,
+    href: "#",
+  },
+  */
+  {
+    id: uniqueId(),
+    title: "S'authentifier",
     icon: IconLogin,
     href: "/authentication/login",
   },
   {
     id: uniqueId(),
-    title: "Register",
+    title: "Créer un nouveau compte",
     icon: IconUserPlus,
     href: "/authentication/register",
   },
-  {
-    navlabel: true,
-    subheader: "Extra",
-  },
-  {
-    id: uniqueId(),
-    title: "Icons",
-    icon: IconMoodHappy,
-    href: "/icons",
-  },
-  {
-    id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/sample-page",
-  },
-];
 
+  
+];
 export default MenuItemsAdmin;
