@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import { apiService } from '../../../services/api';
 import type { Schedule, Student } from '../../../types';
+import ProtectedRoute from '@/app/(DashboardLayout)/components/ProtectedRoute'; // Import the ProtectedRoute component
+
 
 export default function StudentDashboard() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -52,6 +54,8 @@ export default function StudentDashboard() {
   };
 
   return (
+    <ProtectedRoute> {/* Wrap the entire dashboard with ProtectedRoute */}
+
     <Container maxWidth="lg" className="mt-4">
       <Grid container spacing={4}>
         {/* Student Info Card */}
@@ -102,7 +106,7 @@ export default function StudentDashboard() {
                           <TableCell>{`${schedule.startTime} - ${schedule.endTime}`}</TableCell>
                           <TableCell>{schedule.subject}</TableCell>
                           <TableCell>
-                            {`${schedule.professor.firstName} ${schedule.professor.lastName}`}
+                            {`${schedule.professor?.firstName} ${schedule.professor?.lastName}`}
                           </TableCell>
                           <TableCell>{`${schedule.room.roomNumber} (${schedule.room.building})`}</TableCell>
                           <TableCell>{schedule.type}</TableCell>
@@ -117,5 +121,7 @@ export default function StudentDashboard() {
         </Grid>
       </Grid>
     </Container>
+    </ProtectedRoute>
+
   );
 }

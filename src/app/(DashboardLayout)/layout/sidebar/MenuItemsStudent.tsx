@@ -1,6 +1,7 @@
 import {
   IconAperture,
   IconCopy,
+  IconDoorExit,
   IconLayoutDashboard,
   IconLogin,
   IconMoodHappy,
@@ -20,25 +21,17 @@ const MenuItemsAdmin = [
     id: uniqueId(),
     title: "Tableau de bord",
     icon: IconLayoutDashboard,
-    href: "/admin",
+    href: "/",
   },
   
   {
     navlabel: true,
     subheader: "Auth",
   },
-  /*
   {
     id: uniqueId(),
     title: "Se déconnecter",
     icon: IconDoorExit,
-    href: "#",
-  },
-  */
-  {
-    id: uniqueId(),
-    title: "S'authentifier",
-    icon: IconLogin,
     href: "/authentication/login",
   },
   {

@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/system';
+import ProtectedRoute from '@/app/(DashboardLayout)/components/ProtectedRoute'; // Import the ProtectedRoute component
+
 import {
   Container,
   Grid,
@@ -84,6 +86,8 @@ export default function ProfessorDashboard() {
   };
 
   return (
+    <ProtectedRoute> {/* Wrap the entire dashboard with ProtectedRoute */}
+
     <Container maxWidth="lg" className="mt-4">
       <Grid container spacing={4}>
         <Grid item xs={12}>
@@ -192,5 +196,7 @@ export default function ProfessorDashboard() {
         </DialogActions>
       </Dialog>
     </Container>
+    </ProtectedRoute>
+
   );
 }

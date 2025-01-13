@@ -20,31 +20,50 @@ const MenuItemsAdmin = [
     navlabel: true,
     subheader: "Home",
   },
-
   {
     id: uniqueId(),
     title: "Tableau de bord",
     icon: IconLayoutDashboard,
     href: "/admin",
   },
-  
+  {
+    navlabel: true,
+    subheader: "Tables",
+  },
+  {
+    id: uniqueId(),
+    title: "Étudiants",
+    icon: IconAperture, // Replace with an appropriate icon
+    href: "/admin/students",
+  },
+  {
+    id: uniqueId(),
+    title: "Professeurs",
+    icon: IconMoodHappy, // Replace with an appropriate icon
+    href: "/admin/professors",
+  },
+  {
+    id: uniqueId(),
+    title: "Horaires",
+    icon: IconCopy, // Replace with an appropriate icon
+    href: "/admin/schedules",
+  },
+  {
+    id: uniqueId(),
+    title: "Salles",
+    icon: IconTypography, // Replace with an appropriate icon
+    href: "/admin/rooms",
+  },
   {
     navlabel: true,
     subheader: "Auth",
   },
-  /*
   {
     id: uniqueId(),
     title: "Se déconnecter",
     icon: IconDoorExit,
-    href: "#",
-  },
-  */
-  {
-    id: uniqueId(),
-    title: "S'authentifier",
-    icon: IconLogin,
     href: "/authentication/login",
+    onClick: handleLogout, // Add onClick handler for logout
   },
   {
     id: uniqueId(),
@@ -52,8 +71,6 @@ const MenuItemsAdmin = [
     icon: IconUserPlus,
     href: "/authentication/register",
   },
-
-  
 ];
 
 export default MenuItemsAdmin;

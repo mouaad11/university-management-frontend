@@ -1,18 +1,20 @@
 /*
-I figured out that to create a schedule, the professor id is assigned
-correctly, but we don't want a professor id num, we wanna pass the 
-professor object, so use api call getprofbyid to actually feed formData
-with the professor, and do the same with all objects that have
-objects as attributes
-
-add a list of students and schedules and so on ... with their Crud
-
 when the admin tries to create a student or prof, you need to pass
-the role aswell, because now the created user can't login because
-they don't have a role
+the signup api not create..
+
+make every crud table on its own page
+
+fix edit crud on lists
+
+translate
 */
 'use client';
 import React, { useState, useEffect } from 'react';
+import StudentsTable from '../components/dashboard/StudentsTable';
+import ProfessorsTable from '../components/dashboard/ProfessorsTable';
+import SchedulesTable from '../components/dashboard/SchedulesTable';
+import RoomsTable from '../components/dashboard/RoomsTable';
+import TimeTable from '../components/dashboard/TimeTable';
 import {
   Chip,
   Container,
@@ -36,11 +38,17 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { apiService } from '../../../services/api';
 import type { Room, RoomRequest, Schedule, Student, Professor, Classe, User } from '../../../types';
 import { isClassElement } from 'typescript';
+import ProtectedRoute from '@/app/(DashboardLayout)/components/ProtectedRoute'; // Import the ProtectedRoute component
+import Head from 'next/head';
+
+
 
 // Form types for better type safety
 type ScheduleForm = Omit<Schedule, 'id' | 'professor' | 'room' | 'classe'> & {
@@ -60,6 +68,8 @@ type RoomForm = Omit<Room, 'id'>;
 type ClasseForm = Omit<Classe, 'id'>;
 
 type DialogFormType = 'schedule' | 'student' | 'professor' | 'room' | 'class';
+
+
 
 const initialFormState = {
   schedule: {
@@ -108,6 +118,18 @@ const initialFormState = {
 };
 
 export default function AdminDashboard() {
+  // snackbar
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('info');
+  const [snackbarDuration, setSnackbarDuration] = useState<number>(30000); // 30 seconds
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
   // State management
   const [rooms, setRooms] = useState<Room[]>([]);
   const [pendingRequests, setPendingRequests] = useState<RoomRequest[]>([]);
@@ -121,6 +143,178 @@ export default function AdminDashboard() {
   const [formData, setFormData] = useState<any>(initialFormState.schedule);
   const [classeData, setSelectedClasse] = useState<Classe | undefined>(undefined);
   const [professorData, setSelectedProfessor] = useState<Professor | undefined>(undefined);
+
+  //CRUD tables
+  const [sortField, setSortField] = useState<string>('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+ // timetable check overlap
+ const checkForOverlap = (
+  schedules: Schedule[],
+  roomId: string,
+  dayOfWeek: string,
+  startTime: string,
+  endTime: string
+) => {
+  // Convert time strings to minutes for easier comparison
+  const toMinutes = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const newStart = toMinutes(startTime);
+  const newEnd = toMinutes(endTime);
+
+  // Parse roomId to number for consistent comparison
+  const roomIdNum = parseInt(roomId, 10);
+
+  // Find conflicting schedules
+  const conflictingSchedules = schedules.filter((schedule) => {
+    // Ensure we're comparing numbers with numbers
+    if (schedule.room.id === roomIdNum && schedule.dayOfWeek === dayOfWeek) {
+      const existingStart = toMinutes(schedule.startTime);
+      const existingEnd = toMinutes(schedule.endTime);
+
+      // Check for overlap
+      const hasOverlap = (
+        (newStart >= existingStart && newStart < existingEnd) || // New schedule starts during existing schedule
+        (newEnd > existingStart && newEnd <= existingEnd) || // New schedule ends during existing schedule
+        (newStart <= existingStart && newEnd >= existingEnd) // New schedule completely overlaps existing schedule
+      );
+
+      /* Add debug logging
+      console.log({
+        newSchedule: { roomId: roomIdNum, start: newStart, end: newEnd },
+        existingSchedule: { 
+          roomId: schedule.room.id, 
+          start: existingStart, 
+          end: existingEnd 
+        },
+        hasOverlap
+      });*/
+
+      return hasOverlap;
+    }
+    return false;
+  });
+
+  if (conflictingSchedules.length > 0) {
+    const conflictingTimes = conflictingSchedules
+      .map(
+        (s) =>
+          `${s.dayOfWeek} ${s.startTime} - ${s.endTime} (${s.classe?.name || "No class"})`
+      )
+      .join(", ");
+
+    return {
+      isOverlap: true,
+      conflictingSchedules,
+      message: `Room is occupied at the selected time. Conflicting schedules: ${conflictingTimes}`,
+    };
+  }
+
+  return { isOverlap: false, conflictingSchedules: [], message: "" };
+};
+
+
+  const handleSort = (field: string) => {
+    setSortField(field);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
+  //crud handlers
+  // Handler for editing a student
+const handleEditStudent = async (id: number, updatedData: any) => {
+  try {
+    const response = await apiService.updateStudent(id, updatedData);
+    setStudents(students.map(student => 
+      student.id === id ? response.data : student
+    ));
+  } catch (error) {
+    console.error('Error updating student:', error);
+  }
+};
+
+// Handler for deleting a student
+const handleDeleteStudent = async (id: number) => {
+  try {
+    await apiService.deleteStudent(id);
+    setStudents(students.filter(student => student.id !== id));
+  } catch (error) {
+    console.error('Error deleting student:', error);
+  }
+};
+
+// Handler for editing a professor
+const handleEditProfessor = async (id: number, updatedData: any) => {
+  try {
+    const response = await apiService.updateProfessor(id, updatedData);
+    setProfessors(professors.map(professor => 
+      professor.id === id ? response.data : professor
+    ));
+  } catch (error) {
+    console.error('Error updating professor:', error);
+  }
+};
+
+// Handler for deleting a professor
+const handleDeleteProfessor = async (id: number) => {
+  try {
+    await apiService.deleteProfessor(id);
+    setProfessors(professors.filter(professor => professor.id !== id));
+  } catch (error) {
+    console.error('Error deleting professor:', error);
+  }
+};
+
+// Handler for editing a schedule
+const handleEditSchedule = async (id: number, updatedData: any) => {
+  try {
+    const response = await apiService.updateSchedule(id, updatedData);
+    setSchedules(schedules.map(schedule => 
+      schedule.id === id ? response.data : schedule
+    ));
+  } catch (error) {
+    console.error('Error updating schedule:', error);
+  }
+};
+
+// Handler for deleting a schedule
+const handleDeleteSchedule = async (id: number) => {
+  try {
+    await apiService.deleteSchedule(id);
+    setSchedules(schedules.filter(schedule => schedule.id !== id));
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+  }
+};
+
+// Handler for editing a room
+const handleEditRoom = async (id: number, updatedData: any) => {
+  try {
+    const response = await apiService.updateRoom(id, updatedData);
+    setRooms(rooms.map(room => 
+      room.id === id ? response.data : room
+    ));
+  } catch (error) {
+    console.error('Error updating room:', error);
+  }
+};
+
+// Handler for deleting a room
+const handleDeleteRoom = async (id: number) => {
+  try {
+    await apiService.deleteRoom(id);
+    setRooms(rooms.filter(room => room.id !== id));
+  } catch (error) {
+    console.error('Error deleting room:', error);
+  }
+};
+
 
   // Constants
   const timeslots = [
@@ -202,17 +396,38 @@ export default function AdminDashboard() {
     try {
       // Validate required fields before submission
       if (dialogType === 'schedule') {
-        if (!formData.professorId || !formData.roomId || !formData.dayOfWeek) {
-          console.error('Required fields are missing');
+        if (!formData.professorId || !formData.roomId || !formData.dayOfWeek || !formData.startTime || !formData.endTime) {
+          setSnackbarSeverity('error');
+          setSnackbarMessage('All fields are required');
+          setSnackbarOpen(true);
+          return;
+        }
+  
+        const { isOverlap, message } = checkForOverlap(
+          schedules,
+          formData.roomId,
+          formData.dayOfWeek,
+          formData.startTime,
+          formData.endTime
+        );
+  
+        if (isOverlap) {
+          setSnackbarSeverity('error');
+          setSnackbarMessage(message);
+          setSnackbarOpen(true);
+          setOpenDialog(false); // Close the dialog when there's an overlap
           return;
         }
       }
   
+      // Proceed with form submission based on dialogType
       switch (dialogType) {
         case 'schedule':
-          console.log(formData);
           await apiService.createSchedule(formData);
+          setSnackbarSeverity('success');
+          setSnackbarMessage('Schedule created successfully');
           break;
+          //rest of code 
         case 'student':
           await apiService.createStudent(formData);
           break;
@@ -280,6 +495,16 @@ export default function AdminDashboard() {
   };
 
   const isScheduleInSlot = (schedule: Schedule, day: string, timeslot: { start: string; end: string }) => {
+    // console.log('Schedule:', schedule);
+    // console.log('Database day :', schedule.dayOfWeek.toLowerCase(), 'frontend day: ', day.toLowerCase());
+    // console.log('Database start time :', schedule.startTime, 'frontend start time: ', timeslot.start);
+    // console.log('Database end time :',schedule.endTime , 'frontend end time: ', timeslot.end);
+
+    //console.log('Timeslot:', timeslot);
+    // console.log('Match:', schedule.dayOfWeek.toLowerCase() === day.toLowerCase() &&
+      // schedule.startTime === timeslot.start &&
+      // schedule.endTime === timeslot.end);
+  
     return (
       schedule.dayOfWeek.toLowerCase() === day.toLowerCase() &&
       schedule.startTime === timeslot.start &&
@@ -685,6 +910,10 @@ export default function AdminDashboard() {
   };
 
   return (
+    <ProtectedRoute> {/* Wrap the entire dashboard with ProtectedRoute */}
+    <Head>
+        <link rel="icon" href="@/app/favicon.ico" />
+      </Head>
     <Container maxWidth="lg" className="mt-4">
       <Grid container spacing={4}>
         {/* Summary Cards */}
@@ -839,51 +1068,60 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Timetable */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Room Timetable
-              </Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Time</TableCell>
-                    {daysOfWeek.map((day) => (
-                      <TableCell key={day}>{day}</TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {timeslots.map((timeslot) => (
-                    <TableRow key={`${timeslot.start}-${timeslot.end}`}>
-                      <TableCell>{`${timeslot.start} - ${timeslot.end}`}</TableCell>
-                      {daysOfWeek.map((day) => (
-                        <TableCell key={`${day}-${timeslot.start}-${timeslot.end}`}>
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {schedules
-                              .filter((schedule) => isScheduleInSlot(schedule, day, timeslot))
-                              .map((schedule) => (
-                                <Chip
-                                  key={schedule.id}
-                                  label={`${schedule.room.roomNumber} - ${schedule.subject}`}
-                                  color="primary"
-                                  size="small"
-                                />
-                              ))}
-                          </Box>
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </Grid>
       </Grid>
+      <br></br>
+        {/* Timetable */}
+  <Grid item xs={12}>
+    <TimeTable schedules={schedules} />
+  </Grid>
+  <Grid item xs={12}>
+  <StudentsTable
+    students={students}
+    sortField={sortField}
+    sortOrder={sortOrder}
+    searchTerm={searchTerm}
+    onSort={handleSort}
+    onSearch={handleSearch}
+    onEdit={handleEditStudent}
+    onDelete={handleDeleteStudent}
+  />
+</Grid>
+<Grid item xs={12}>
+  <ProfessorsTable
+    professors={professors}
+    sortField={sortField}
+    sortOrder={sortOrder}
+    searchTerm={searchTerm}
+    onSort={handleSort}
+    onSearch={handleSearch}
+    onEdit={handleEditProfessor}
+    onDelete={handleDeleteProfessor}
+  />
+</Grid>
+<Grid item xs={12}>
+  <SchedulesTable
+    schedules={schedules}
+    sortField={sortField}
+    sortOrder={sortOrder}
+    searchTerm={searchTerm}
+    onSort={handleSort}
+    onSearch={handleSearch}
+    onEdit={handleEditSchedule}
+    onDelete={handleDeleteSchedule}
+  />
+</Grid>
+<Grid item xs={12}>
+  <RoomsTable
+    rooms={rooms}
+    sortField={sortField}
+    sortOrder={sortOrder}
+    searchTerm={searchTerm}
+    onSort={handleSort}
+    onSearch={handleSearch}
+    onEdit={handleEditRoom}
+    onDelete={handleDeleteRoom}
+  />
+</Grid>
 
       {/* Dialog for Adding Data */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -901,5 +1139,24 @@ export default function AdminDashboard() {
         </DialogActions>
       </Dialog>
     </Container>
+    <Snackbar
+  open={snackbarOpen}
+  autoHideDuration={snackbarDuration}
+  onClose={handleCloseSnackbar}
+  anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // This makes it more visible
+>
+  <Alert 
+    onClose={handleCloseSnackbar}
+    severity={snackbarSeverity}
+    variant="filled"
+    elevation={6}
+    sx={{ width: '100%' }}
+  >
+    {snackbarMessage}
+  </Alert>
+</Snackbar>
+    </ProtectedRoute>
+
   );
+  
 }

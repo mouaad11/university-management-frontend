@@ -5,7 +5,10 @@ import PageContainer from "@/app/(DashboardLayout)/components/container/PageCont
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 import AuthLogin from "../auth/AuthLogin";
 
+
+
 const Login2 = () => {
+  localStorage.removeItem("token"); 
   return (
     <PageContainer title="Connexion" description="Page de connexion">
       <Box

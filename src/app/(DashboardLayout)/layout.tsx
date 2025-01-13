@@ -1,8 +1,10 @@
 "use client";
 import { styled, Container, Box } from "@mui/material";
+import ProtectedRoute from '@/app/(DashboardLayout)/components/ProtectedRoute'; // Import the ProtectedRoute component
 import React, { useState } from "react";
 import Header from "@/app/(DashboardLayout)/layout/header/Header";
 import Sidebar from "@/app/(DashboardLayout)/layout/sidebar/Sidebar";
+import Head from 'next/head';
 
 
 const MainWrapper = styled("div")(() => ({
@@ -34,7 +36,12 @@ export default function RootLayout({
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   return (
+    <ProtectedRoute> {/* Wrap the entire dashboard with ProtectedRoute */}
+
     <MainWrapper className="mainwrapper">
+      <Head>
+        <link rel="icon" href="@/app/favicon.ico" />
+      </Head>
       {/* ------------------------------------------- */}
       {/* Sidebar */}
       {/* ------------------------------------------- */}
@@ -70,5 +77,6 @@ export default function RootLayout({
         </Container>
       </PageWrapper>
     </MainWrapper>
+    </ProtectedRoute>
   );
 }
