@@ -24,6 +24,9 @@ export const apiService = {
   //Users
   getAllUsers: () => api.get<User[]>('/users'),
   confirmUserAccount: (userId: number) => api.put(`/confirm-user/${userId}`),
+  deleteUser: (id: number) => api.delete(`/users/${id}`),
+
+  
   // Schedules
   getAllSchedules: () => api.get<Schedule[]>('/schedules'),
   getScheduleById: (id: number) => api.get<Schedule>(`/schedules/${id}`),

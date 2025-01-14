@@ -1,12 +1,12 @@
 /*
+
+finish up translation (deepseek) on other pages than admin DASH
+
 when the admin tries to create a student or prof, you need to pass
 the signup api not create..
 
-make every crud table on its own page
-
 fix edit crud on lists
 
-translate
 */
 'use client';
 import React, { useState, useEffect } from 'react';
@@ -259,7 +259,18 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+  
   // Handlers
+const handleDeleteUser = async (userId: number) => {
+  try {
+    await apiService.deleteUser(userId);
+    // Remove the deleted user from the list
+    setUnconfirmedUsers(unconfirmedUsers.filter(user => user.id !== userId));
+  } catch (error) {
+    console.error('Error deleting user:', error);
+  }
+};
+  
   const handleConfirmUser = async (userId: number) => {
     try {
       await apiService.confirmUserAccount(userId);
@@ -768,18 +779,19 @@ return (
     onChange={handleFormChange}
     required
   />
-  <FormControl fullWidth required>
-    <InputLabel>Disponibilité</InputLabel>
-    <Select
-      name="isAvailable"
-      value={formData.isAvailable}
-      label="Disponibilité"
-      onChange={handleFormChange}
-    >
-      <MenuItem>Disponible</MenuItem>
-      <MenuItem>Indisponible</MenuItem>
-    </Select>
-  </FormControl>
+<FormControl fullWidth required>
+  <InputLabel>Disponibilité</InputLabel>
+  <Select
+    name="isAvailable"
+    value={formData.isAvailable}
+    label="Disponibilité"
+    onChange={handleFormChange}
+  >
+    <MenuItem value={1}>Disponible</MenuItem>
+    <MenuItem value={0}>Indisponible</MenuItem>
+  </Select>
+</FormControl>
+
 </Box>
 );
 
@@ -847,7 +859,7 @@ return (
     <Grid item xs={12} md={3}>
       <Card>
         <CardContent>
-          <Typography variant="h6">Comptes Non Confirmés</Typography>
+          <Typography variant="h6">Non Confirmés</Typography>
           <Typography variant="h3">{unconfirmedUsers.length}</Typography>
         </CardContent>
       </Card>
@@ -874,50 +886,62 @@ return (
       </Box>
     </Grid>
     {/* Tableau des Utilisateurs Non Confirmés */}
-    <Grid item xs={12}>
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>Utilisateurs Non Confirmés</Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Rôle</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {unconfirmedUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={
-                        'studentId' in user ? 'Étudiant' : 
-                        'department' in user ? 'Professeur' : 'Utilisateur'
-                      }
-                      color="primary" 
-                      variant="outlined" 
-                    />
-                      </TableCell>
-                      <TableCell>
-                      <Button
-  variant="contained"
-  color="primary"
-  size="small"
-  onClick={() => handleConfirmUser(user.id)}
->
-  Confirmer l'Utilisateur
-</Button>
-</TableCell>
-</TableRow>
-))}
-</TableBody>
-</Table>
-</CardContent>
-</Card>
+<Grid item xs={12}>
+  <Card>
+    <CardContent>
+      <Typography variant="h6" gutterBottom>Utilisateurs Non Confirmés</Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Nom</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Rôle</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {unconfirmedUsers.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <Chip 
+                  label={
+                    'studentId' in user ? 'Étudiant' : 
+                    'department' in user ? 'Professeur' : 'Administrateur'
+                  }
+                  color="primary" 
+                  variant="outlined" 
+                />
+              </TableCell>
+              <TableCell>
+                {/* Confirm User Button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={() => handleConfirmUser(user.id)}
+                  style={{ marginRight: '8px' }}
+                >
+                  Confirmer l'Utilisateur
+                </Button>
+
+                {/* Delete User Button */}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  onClick={() => handleDeleteUser(user.id)}
+                >
+                  Supprimer l'Utilisateur
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
 </Grid>
 
 {/* Tableau des Demandes en Attente */}
