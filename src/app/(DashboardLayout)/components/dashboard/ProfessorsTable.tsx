@@ -13,7 +13,7 @@ interface ProfessorsTableProps {
   onDelete: (id: number) => void;
 }
 
-const ProfessorsTable: React.FC<ProfessorsTableProps> = ({ professors, sortField, sortOrder, searchTerm, onSort, onSearch }) => {
+const ProfessorsTable: React.FC<ProfessorsTableProps> = ({ professors, sortField, sortOrder, searchTerm, onSort, onSearch, onEdit, onDelete }) => {
   const sortedProfessors = sortData(professors, sortField, sortOrder);
   const filteredProfessors = searchData(sortedProfessors, searchTerm, ['firstName', 'lastName', 'email', 'department']);
 
@@ -47,7 +47,14 @@ const ProfessorsTable: React.FC<ProfessorsTableProps> = ({ professors, sortField
                 <TableCell>{professor.department}</TableCell>
                 <TableCell>
                   <Button variant="contained" color="primary" size="small">Edit</Button>
-                  <Button variant="contained" color="secondary" size="small">Delete</Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={() => onDelete(professor.id)} // Pass student ID for deletion
+                  >
+                    Delete
+                  </Button> 
                 </TableCell>
               </TableRow>
             ))}

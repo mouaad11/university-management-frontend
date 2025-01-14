@@ -16,7 +16,7 @@ const ProfessorsPage = () => {
   useEffect(() => {
     const fetchProfessors = async () => {
       try {
-        const response = await apiService.getAllProfessors(); // Assuming you have a method to fetch students
+        const response = await apiService.getAllProfessors(); // Assuming you have a method to fetch professors
         setProfessors(response.data); // Update the state with the fetched data
       } catch (error) {
         console.error('Error fetching professors:', error);
@@ -59,22 +59,19 @@ const handleDeleteProfessor = async (id: number) => {
 
   return (
     <ProtectedRoute>
-<Grid item xs={12}>
-<ProfessorsTable
-    professors={professors}
-    sortField={sortField}
-    sortOrder={sortOrder}
-    searchTerm={searchTerm}
-    onSort={handleSort}
-    onSearch={handleSearch}
-    onEdit={handleEditProfessor}
-    onDelete={handleDeleteProfessor}
-  />
+      <Grid item xs={12}>
+        <ProfessorsTable
+          professors={professors}
+          sortField={sortField}
+          sortOrder={sortOrder}
+          searchTerm={searchTerm}
+          onSort={handleSort}
+          onSearch={handleSearch}
+          onEdit={handleEditProfessor}
+          onDelete={handleDeleteProfessor}
+        />
       </Grid>
     </ProtectedRoute>
   );
 };
-
 export default ProfessorsPage;
-
-

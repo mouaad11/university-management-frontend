@@ -1,4 +1,5 @@
-import { IconDoorExit } from "@tabler/icons-react";
+import { iconClasses } from "@mui/material";
+import { Icon3dCubeSphere, IconCalendarTime, IconDoor, IconDoorExit, IconUser, IconUsersGroup } from "@tabler/icons-react";
 import {
   IconAperture,
   IconCopy,
@@ -33,25 +34,25 @@ const MenuItemsAdmin = [
   {
     id: uniqueId(),
     title: "Étudiants",
-    icon: IconAperture, // Replace with an appropriate icon
+    icon: IconUsersGroup, // Replace with an appropriate icon
     href: "/admin/students",
   },
   {
     id: uniqueId(),
     title: "Professeurs",
-    icon: IconMoodHappy, // Replace with an appropriate icon
+    icon: IconUser, // Replace with an appropriate icon
     href: "/admin/professors",
   },
   {
     id: uniqueId(),
-    title: "Horaires",
-    icon: IconCopy, // Replace with an appropriate icon
+    title: "Cours",
+    icon: IconCalendarTime, // Replace with an appropriate icon
     href: "/admin/schedules",
   },
   {
     id: uniqueId(),
     title: "Salles",
-    icon: IconTypography, // Replace with an appropriate icon
+    icon: IconDoor, // Replace with an appropriate icon
     href: "/admin/rooms",
   },
   {

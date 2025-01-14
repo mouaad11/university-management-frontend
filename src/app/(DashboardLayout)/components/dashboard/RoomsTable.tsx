@@ -13,7 +13,7 @@ interface RoomsTableProps {
   onDelete: (id: number) => void;
 }
 
-const RoomsTable: React.FC<RoomsTableProps> = ({ rooms, sortField, sortOrder, searchTerm, onSort, onSearch }) => {
+const RoomsTable: React.FC<RoomsTableProps> = ({ rooms, sortField, sortOrder, searchTerm, onSort, onSearch, onEdit, onDelete }) => {
   const sortedRooms = sortData(rooms, sortField, sortOrder);
   const filteredRooms = searchData(sortedRooms, searchTerm, ['roomNumber', 'building', 'type']);
 
@@ -45,7 +45,14 @@ const RoomsTable: React.FC<RoomsTableProps> = ({ rooms, sortField, sortOrder, se
                 <TableCell>{room.type}</TableCell>
                 <TableCell>
                   <Button variant="contained" color="primary" size="small">Edit</Button>
-                  <Button variant="contained" color="secondary" size="small">Delete</Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={() => onDelete(room.id)} // Pass student ID for deletion
+                  >
+                    Delete
+                  </Button> 
                 </TableCell>
               </TableRow>
             ))}

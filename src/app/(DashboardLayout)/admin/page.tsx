@@ -210,7 +210,7 @@ export default function AdminDashboard() {
     return {
       isOverlap: true,
       conflictingSchedules,
-      message: `Room is occupied at the selected time. Conflicting schedules: ${conflictingTimes}`,
+      message: `La salle choisie est occupée pendant la période séléctionnée. les cours en conflit sont: ${conflictingTimes}`,
     };
   }
 
@@ -226,103 +226,6 @@ export default function AdminDashboard() {
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
-  //crud handlers
-  // Handler for editing a student
-const handleEditStudent = async (id: number, updatedData: any) => {
-  try {
-    const response = await apiService.updateStudent(id, updatedData);
-    setStudents(students.map(student => 
-      student.id === id ? response.data : student
-    ));
-  } catch (error) {
-    console.error('Error updating student:', error);
-  }
-};
-
-// Handler for deleting a student
-const handleDeleteStudent = async (id: number) => {
-  try {
-    await apiService.deleteStudent(id);
-    setStudents(students.filter(student => student.id !== id));
-  } catch (error) {
-    console.error('Error deleting student:', error);
-  }
-};
-
-// Handler for editing a professor
-const handleEditProfessor = async (id: number, updatedData: any) => {
-  try {
-    const response = await apiService.updateProfessor(id, updatedData);
-    setProfessors(professors.map(professor => 
-      professor.id === id ? response.data : professor
-    ));
-  } catch (error) {
-    console.error('Error updating professor:', error);
-  }
-};
-
-// Handler for deleting a professor
-const handleDeleteProfessor = async (id: number) => {
-  try {
-    await apiService.deleteProfessor(id);
-    setProfessors(professors.filter(professor => professor.id !== id));
-  } catch (error) {
-    console.error('Error deleting professor:', error);
-  }
-};
-
-// Handler for editing a schedule
-const handleEditSchedule = async (id: number, updatedData: any) => {
-  try {
-    const response = await apiService.updateSchedule(id, updatedData);
-    setSchedules(schedules.map(schedule => 
-      schedule.id === id ? response.data : schedule
-    ));
-  } catch (error) {
-    console.error('Error updating schedule:', error);
-  }
-};
-
-// Handler for deleting a schedule
-const handleDeleteSchedule = async (id: number) => {
-  try {
-    await apiService.deleteSchedule(id);
-    setSchedules(schedules.filter(schedule => schedule.id !== id));
-  } catch (error) {
-    console.error('Error deleting schedule:', error);
-  }
-};
-
-// Handler for editing a room
-const handleEditRoom = async (id: number, updatedData: any) => {
-  try {
-    const response = await apiService.updateRoom(id, updatedData);
-    setRooms(rooms.map(room => 
-      room.id === id ? response.data : room
-    ));
-  } catch (error) {
-    console.error('Error updating room:', error);
-  }
-};
-
-// Handler for deleting a room
-const handleDeleteRoom = async (id: number) => {
-  try {
-    await apiService.deleteRoom(id);
-    setRooms(rooms.filter(room => room.id !== id));
-  } catch (error) {
-    console.error('Error deleting room:', error);
-  }
-};
-
-
-  // Constants
-  const timeslots = [
-    { start: '08:30', end: '10:30' },
-    { start: '10:30', end: '12:30' },
-    { start: '14:00', end: '16:00' },
-    { start: '16:00', end: '18:00' }
-  ];
 
   const daysOfWeek = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
@@ -398,7 +301,7 @@ const handleDeleteRoom = async (id: number) => {
       if (dialogType === 'schedule') {
         if (!formData.professorId || !formData.roomId || !formData.dayOfWeek || !formData.startTime || !formData.endTime) {
           setSnackbarSeverity('error');
-          setSnackbarMessage('All fields are required');
+          setSnackbarMessage('Tous les champs sont obligatoires');
           setSnackbarOpen(true);
           return;
         }
@@ -425,7 +328,7 @@ const handleDeleteRoom = async (id: number) => {
         case 'schedule':
           await apiService.createSchedule(formData);
           setSnackbarSeverity('success');
-          setSnackbarMessage('Schedule created successfully');
+          setSnackbarMessage('Cours crée avec succès');
           break;
           //rest of code 
         case 'student':
@@ -462,7 +365,7 @@ const handleDeleteRoom = async (id: number) => {
       };
       fetchData();
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Erreur lors de la soumission:', error);
     }
   };
 
@@ -471,7 +374,7 @@ const handleDeleteRoom = async (id: number) => {
       await apiService.approveRoomRequest(id);
       setPendingRequests(pendingRequests.filter(request => request.id !== id));
     } catch (error) {
-      console.error('Error approving request:', error);
+      console.error('Erreur lors de l\'acceptation:', error);
     }
   };
 
@@ -480,7 +383,7 @@ const handleDeleteRoom = async (id: number) => {
       await apiService.rejectRoomRequest(id);
       setPendingRequests(pendingRequests.filter(request => request.id !== id));
     } catch (error) {
-      console.error('Error rejecting request:', error);
+      console.error('Erreur lors du refus:', error);
     }
   };
 
@@ -491,7 +394,7 @@ const handleDeleteRoom = async (id: number) => {
     if (request.student) {
       return `${request.student.firstName} ${request.student.lastName}`;
     }
-    return 'Unknown';
+    return 'Inconnu';
   };
 
   const isScheduleInSlot = (schedule: Schedule, day: string, timeslot: { start: string; end: string }) => {
@@ -603,547 +506,498 @@ const handleDeleteRoom = async (id: number) => {
       case 'schedule':
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Class Select */}
-            <FormControl fullWidth>
-              <InputLabel>Class</InputLabel>
-              <Select
-                name="classeId"
-                value={formData.classeId}
-                label="Class"
-                onChange={handleClasseChange} // Updated handler to fetch class object
-              >
-                {classes.map((classe) => (
-                  <MenuItem key={classe.id} value={classe.id}>
-                    {classe.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-  
-            {/* Professor Select */}
-            <FormControl fullWidth>
-              <InputLabel>Professor</InputLabel>
-              <Select
-                name="professorId"
-                value={formData.professorId}
-                label="Professor"
-                onChange={handleProfessorChange}
-              >
-                {professors.map((professor) => (
-                  <MenuItem key={professor.id} value={professor.id}>
-                    {`${professor.firstName} ${professor.lastName}`}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-  
-            {/* Room Select */}
-            <FormControl fullWidth>
-              <InputLabel>Room</InputLabel>
-              <Select
-                name="roomId"
-                value={formData.roomId}
-                label="Room"
-                onChange={handleRoomChange}
-              >
-                {rooms.map((room) => (
-                  <MenuItem key={room.id} value={room.id}>
-                    {room.roomNumber}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-  
-            {/* Day of Week Select */}
-            <FormControl fullWidth>
-              <InputLabel>Day of Week</InputLabel>
-              <Select
-                name="dayOfWeek"
-                value={formData.dayOfWeek}
-                label="Day of Week"
-                onChange={handleFormChange}
-              >
-                {daysOfWeek.map((day) => (
-                  <MenuItem key={day} value={day}>
-                    {day}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-  
-            {/* Start Time Input */}
-            <TextField
-              name="startTime"
-              label="Start Time"
-              type="time"
-              value={formData.startTime}
-              onChange={handleFormChange}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }} // 5 min intervals
-            />
-  
-            {/* End Time Input */}
-            <TextField
-              name="endTime"
-              label="End Time"
-              type="time"
-              value={formData.endTime}
-              onChange={handleFormChange}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }} // 5 min intervals
-            />
-  
-            {/* Subject Input */}
-            <TextField
-              name="subject"
-              label="Subject"
-              value={formData.subject}
-              onChange={handleFormChange}
-            />
-  
-            {/* Type Select */}
-            <FormControl fullWidth>
-              <InputLabel>Type</InputLabel>
-              <Select
-                name="type"
-                value={formData.type}
-                label="Type"
-                onChange={handleFormChange}
-              >
-                <MenuItem value="COURSE">Course</MenuItem>
-                <MenuItem value="TD">TD</MenuItem>
-                <MenuItem value="TP">TP</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        );
-  
-      case 'student':
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              name="username"
-              label="Username"
-              value={formData.username}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="password"
-              label="Password"
-              type="password"
-              value={formData.password}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="email"
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="firstName"
-              label="First Name"
-              value={formData.firstName}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="lastName"
-              label="Last Name"
-              value={formData.lastName}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="studentId"
-              label="Student ID"
-              value={formData.studentId}
-              onChange={handleFormChange}
-              required
-            />
-            <FormControl fullWidth required>
-              <InputLabel>Class</InputLabel>
-              <Select
-                name="classeId"
-                value={formData.classeId}
-                label="Class"
-                onChange={handleClasseChange}
-              >
-                {classes.map((classe) => (
-                  <MenuItem key={classe.id} value={classe.id}>
-                    {classe.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        );
+  {/* Sélection de la Classe */}
+<FormControl fullWidth>
+  <InputLabel>Classe</InputLabel>
+  <Select
+    name="classeId"
+    value={formData.classeId}
+    label="Classe"
+    onChange={handleClasseChange} // Gestionnaire mis à jour pour récupérer l'objet de la classe
+  >
+    {classes.map((classe) => (
+      <MenuItem key={classe.id} value={classe.id}>
+        {classe.name}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
 
-      case 'professor':
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              name="username"
-              label="Username"
-              value={formData.username}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="password"
-              label="Password"
-              type="password"
-              value={formData.password}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="email"
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="firstName"
-              label="First Name"
-              value={formData.firstName}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="lastName"
-              label="Last Name"
-              value={formData.lastName}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="department"
-              label="Department"
-              value={formData.department}
-              onChange={handleFormChange}
-              required
-            />
-          </Box>
-        );
+{/* Sélection du Professeur */}
+<FormControl fullWidth>
+  <InputLabel>Professeur</InputLabel>
+  <Select
+    name="professorId"
+    value={formData.professorId}
+    label="Professeur"
+    onChange={handleProfessorChange}
+  >
+    {professors.map((professor) => (
+      <MenuItem key={professor.id} value={professor.id}>
+        {`${professor.firstName} ${professor.lastName}`}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
 
-      case 'room':
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              name="roomNumber"
-              label="Room Number"
-              value={formData.roomNumber}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="capacity"
-              label="Capacity"
-              type="number"
-              value={formData.capacity}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="building"
-              label="Building"
-              value={formData.building}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="type"
-              label="Type"
-              value={formData.type}
-              onChange={handleFormChange}
-              required
-            />
-            <FormControl fullWidth required>
-              <InputLabel>Availability</InputLabel>
-              <Select
-                name="isAvailable"
-                value={formData.isAvailable}
-                label="Availability"
-                onChange={handleFormChange}
-              >
-                <MenuItem>Available</MenuItem>
-                <MenuItem>Unavailable</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        );
+{/* Sélection de la Salle */}
+<FormControl fullWidth>
+  <InputLabel>Salle</InputLabel>
+  <Select
+    name="roomId"
+    value={formData.roomId}
+    label="Salle"
+    onChange={handleRoomChange}
+  >
+    {rooms.map((room) => (
+      <MenuItem key={room.id} value={room.id}>
+        {room.roomNumber}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
 
-      case 'class':
-        return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+{/* Sélection du Jour de la Semaine */}
+<FormControl fullWidth>
+  <InputLabel>Jour de la Semaine</InputLabel>
+  <Select
+    name="dayOfWeek"
+    value={formData.dayOfWeek}
+    label="Jour de la Semaine"
+    onChange={handleFormChange}
+  >
+    {daysOfWeek.map((day) => (
+      <MenuItem key={day} value={day}>
+        {day}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+{/* Heure de Début */}
+<TextField
+  name="startTime"
+  label="Heure de Début"
+  type="time"
+  value={formData.startTime}
+  onChange={handleFormChange}
+  InputLabelProps={{ shrink: true }}
+  inputProps={{ step: 300 }} // Intervalles de 5 minutes
+/>
+
+{/* Heure de Fin */}
+<TextField
+  name="endTime"
+  label="Heure de Fin"
+  type="time"
+  value={formData.endTime}
+  onChange={handleFormChange}
+  InputLabelProps={{ shrink: true }}
+  inputProps={{ step: 300 }} // Intervalles de 5 minutes
+/>
+
+{/* Matière */}
+<TextField
+  name="subject"
+  label="Matière"
+  value={formData.subject}
+  onChange={handleFormChange}
+/>
+
+{/* Sélection du Type */}
+<FormControl fullWidth>
+  <InputLabel>Type</InputLabel>
+  <Select
+    name="type"
+    value={formData.type}
+    label="Type"
+    onChange={handleFormChange}
+  >
+    <MenuItem value="COURSE">Cours</MenuItem>
+    <MenuItem value="TD">TD</MenuItem>
+    <MenuItem value="TP">TP</MenuItem>
+  </Select>
+</FormControl>
+</Box>
+);
+
+case 'student':
+return (
+<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+  <TextField
+    name="username"
+    label="Nom d'utilisateur"
+    value={formData.username}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="password"
+    label="Mot de passe"
+    type="password"
+    value={formData.password}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="email"
+    label="Email"
+    type="email"
+    value={formData.email}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="firstName"
+    label="Prénom"
+    value={formData.firstName}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="lastName"
+    label="Nom de famille"
+    value={formData.lastName}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="studentId"
+    label="Identifiant Étudiant"
+    value={formData.studentId}
+    onChange={handleFormChange}
+    required
+  />
+  <FormControl fullWidth required>
+    <InputLabel>Classe</InputLabel>
+    <Select
+      name="classeId"
+      value={formData.classeId}
+      label="Classe"
+      onChange={handleClasseChange}
+    >
+      {classes.map((classe) => (
+        <MenuItem key={classe.id} value={classe.id}>
+          {classe.name}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Box>
+);
+
+case 'professor':
+return (
+<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+  <TextField
+    name="username"
+    label="Nom d'utilisateur"
+    value={formData.username}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="password"
+    label="Mot de passe"
+    type="password"
+    value={formData.password}
+    onChange={handleFormChange}
+    required
+  />
            <TextField
-              name="name"
-              label="Name"
-              value={formData.name}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="academicYear"
-              label="Academic Year"
-              value={formData.academicYear}
-              onChange={handleFormChange}
-              required
-            />
-            <TextField
-              name="department"
-              label="Department"
-              value={formData.department}
-              onChange={handleFormChange}
-              required
-            />
-          </Box>
-        );
-    }
-  };
+  name="email"
+  label="Email"
+  type="email"
+  value={formData.email}
+  onChange={handleFormChange}
+  required
+/>
+<TextField
+  name="firstName"
+  label="Prénom"
+  value={formData.firstName}
+  onChange={handleFormChange}
+  required
+/>
+<TextField
+  name="lastName"
+  label="Nom de famille"
+  value={formData.lastName}
+  onChange={handleFormChange}
+  required
+/>
+<TextField
+  name="department"
+  label="Département"
+  value={formData.department}
+  onChange={handleFormChange}
+  required
+/>
+</Box>
+);
 
-  return (
-    <ProtectedRoute> {/* Wrap the entire dashboard with ProtectedRoute */}
-    <Head>
-        <link rel="icon" href="@/app/favicon.ico" />
-      </Head>
-    <Container maxWidth="lg" className="mt-4">
-      <Grid container spacing={4}>
-        {/* Summary Cards */}
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Total Rooms</Typography>
-              <Typography variant="h3">{rooms.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Pending Requests</Typography>
-              <Typography variant="h3">{pendingRequests.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Active Schedules</Typography>
-              <Typography variant="h3">{schedules.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6">Unconfirmed Users</Typography>
-              <Typography variant="h3">{unconfirmedUsers.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+case 'room':
+return (
+<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+  <TextField
+    name="roomNumber"
+    label="Numéro de Salle"
+    value={formData.roomNumber}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="capacity"
+    label="Capacité"
+    type="number"
+    value={formData.capacity}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="building"
+    label="Bâtiment"
+    value={formData.building}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="type"
+    label="Type"
+    value={formData.type}
+    onChange={handleFormChange}
+    required
+  />
+  <FormControl fullWidth required>
+    <InputLabel>Disponibilité</InputLabel>
+    <Select
+      name="isAvailable"
+      value={formData.isAvailable}
+      label="Disponibilité"
+      onChange={handleFormChange}
+    >
+      <MenuItem>Disponible</MenuItem>
+      <MenuItem>Indisponible</MenuItem>
+    </Select>
+  </FormControl>
+</Box>
+);
 
-        {/* Action Buttons */}
-        <Grid item xs={12}>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Button variant="contained" onClick={() => handleOpenDialog('schedule')}>
-              Add Schedule
-            </Button>
-            <Button variant="contained" onClick={() => handleOpenDialog('student')}>
-              Add Student
-            </Button>
-            <Button variant="contained" onClick={() => handleOpenDialog('professor')}>
-              Add Professor
-            </Button>
-            <Button variant="contained" onClick={() => handleOpenDialog('room')}>
-              Add Room
-            </Button>
-            <Button variant="contained" onClick={() => handleOpenDialog('class')}>
-              Add Class
-            </Button>
-          </Box>
-        </Grid>
-        {/* Unconfirmed Users Table */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Unconfirmed Users</Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Role</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {unconfirmedUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={
-                            'studentId' in user ? 'Student' : 
-                            'department' in user ? 'Professor' : 'User'
-                          }
-                          color="primary" 
-                          variant="outlined" 
-                        />
+case 'class':
+return (
+<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+  <TextField
+    name="name"
+    label="Nom"
+    value={formData.name}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="academicYear"
+    label="Année Académique"
+    value={formData.academicYear}
+    onChange={handleFormChange}
+    required
+  />
+  <TextField
+    name="department"
+    label="Département"
+    value={formData.department}
+    onChange={handleFormChange}
+    required
+  />
+</Box>
+);
+}
+};
+
+return (
+<ProtectedRoute> {/* Encapsuler tout le tableau de bord avec ProtectedRoute */}
+<Head>
+    <link rel="icon" href="@/app/favicon.ico" />
+  </Head>
+<Container maxWidth="lg" className="mt-4">
+  <Grid container spacing={4}>
+    {/* Cartes de Résumé */}
+    <Grid item xs={12} md={3}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6">Total des Salles</Typography>
+          <Typography variant="h3">{rooms.length}</Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+    <Grid item xs={12} md={3}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6">Demandes en Attente</Typography>
+          <Typography variant="h3">{pendingRequests.length}</Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+    <Grid item xs={12} md={3}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6">Emplois du Temps Actifs</Typography>
+          <Typography variant="h3">{schedules.length}</Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+    <Grid item xs={12} md={3}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6">Comptes Non Confirmés</Typography>
+          <Typography variant="h3">{unconfirmedUsers.length}</Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+
+    {/* Boutons d'Action */}
+    <Grid item xs={12}>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <Button variant="contained" onClick={() => handleOpenDialog('schedule')}>
+          Ajouter un Emploi du Temps
+        </Button>
+        <Button variant="contained" onClick={() => handleOpenDialog('student')}>
+          Ajouter un Étudiant
+        </Button>
+        <Button variant="contained" onClick={() => handleOpenDialog('professor')}>
+          Ajouter un Professeur
+        </Button>
+        <Button variant="contained" onClick={() => handleOpenDialog('room')}>
+          Ajouter une Salle
+        </Button>
+        <Button variant="contained" onClick={() => handleOpenDialog('class')}>
+          Ajouter une Classe
+        </Button>
+      </Box>
+    </Grid>
+    {/* Tableau des Utilisateurs Non Confirmés */}
+    <Grid item xs={12}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Utilisateurs Non Confirmés</Typography>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Nom</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Rôle</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {unconfirmedUsers.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={
+                        'studentId' in user ? 'Étudiant' : 
+                        'department' in user ? 'Professeur' : 'Utilisateur'
+                      }
+                      color="primary" 
+                      variant="outlined" 
+                    />
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          onClick={() => handleConfirmUser(user.id)}
-                        >
-                          Confirm User
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Pending Requests Table */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Pending Room Requests
-              </Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Requester</TableCell>
-                    <TableCell>Room</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {pendingRequests.map((request) => (
-                    <TableRow key={request.id}>
-                      <TableCell>{getRequesterName(request)}</TableCell>
-                      <TableCell>{request.room.roomNumber}</TableCell>
-                      <TableCell>{request.dayOfWeek}</TableCell>
-                      <TableCell>{`${request.startTime} - ${request.endTime}`}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleApproveRequest(request.id)}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            color="error"
-                            onClick={() => handleRejectRequest(request.id)}
-                          >
-                            Reject
-                          </Button>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-      <br></br>
-        {/* Timetable */}
-  <Grid item xs={12}>
-    <TimeTable schedules={schedules} />
-  </Grid>
-  <Grid item xs={12}>
-  <StudentsTable
-    students={students}
-    sortField={sortField}
-    sortOrder={sortOrder}
-    searchTerm={searchTerm}
-    onSort={handleSort}
-    onSearch={handleSearch}
-    onEdit={handleEditStudent}
-    onDelete={handleDeleteStudent}
-  />
-</Grid>
-<Grid item xs={12}>
-  <ProfessorsTable
-    professors={professors}
-    sortField={sortField}
-    sortOrder={sortOrder}
-    searchTerm={searchTerm}
-    onSort={handleSort}
-    onSearch={handleSearch}
-    onEdit={handleEditProfessor}
-    onDelete={handleDeleteProfessor}
-  />
-</Grid>
-<Grid item xs={12}>
-  <SchedulesTable
-    schedules={schedules}
-    sortField={sortField}
-    sortOrder={sortOrder}
-    searchTerm={searchTerm}
-    onSort={handleSort}
-    onSearch={handleSearch}
-    onEdit={handleEditSchedule}
-    onDelete={handleDeleteSchedule}
-  />
-</Grid>
-<Grid item xs={12}>
-  <RoomsTable
-    rooms={rooms}
-    sortField={sortField}
-    sortOrder={sortOrder}
-    searchTerm={searchTerm}
-    onSort={handleSort}
-    onSearch={handleSearch}
-    onEdit={handleEditRoom}
-    onDelete={handleDeleteRoom}
-  />
+                      <Button
+  variant="contained"
+  color="primary"
+  size="small"
+  onClick={() => handleConfirmUser(user.id)}
+>
+  Confirmer l'Utilisateur
+</Button>
+</TableCell>
+</TableRow>
+))}
+</TableBody>
+</Table>
+</CardContent>
+</Card>
 </Grid>
 
-      {/* Dialog for Adding Data */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>
-          {`Add ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}
-        </DialogTitle>
-        <DialogContent>
-          {renderDialogContent()}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
-    <Snackbar
+{/* Tableau des Demandes en Attente */}
+<Grid item xs={12}>
+  <Card>
+    <CardContent>
+      <Typography variant="h6" gutterBottom>
+        Demandes de Salle en Attente
+      </Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Demandeur</TableCell>
+            <TableCell>Salle</TableCell>
+            <TableCell>Date</TableCell>
+            <TableCell>Heure</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {pendingRequests.map((request) => (
+            <TableRow key={request.id}>
+              <TableCell>{getRequesterName(request)}</TableCell>
+              <TableCell>{request.room.roomNumber}</TableCell>
+              <TableCell>{request.dayOfWeek}</TableCell>
+              <TableCell>{`${request.startTime} - ${request.endTime}`}</TableCell>
+              <TableCell>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleApproveRequest(request.id)}
+                  >
+                    Approuver
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleRejectRequest(request.id)}
+                  >
+                    Rejeter
+                  </Button>
+                </Box>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+</Grid>
+</Grid>
+<br></br>
+{/* Emploi du Temps */}
+<Grid item xs={12}>
+  <TimeTable schedules={schedules} />
+</Grid>
+{/* Boîte de Dialogue pour Ajouter des Données */}
+<Dialog open={openDialog} onClose={handleCloseDialog}>
+  <DialogTitle>
+    {`Ajouter ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}
+  </DialogTitle>
+  <DialogContent>
+    {renderDialogContent()}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseDialog}>Annuler</Button>
+    <Button onClick={handleSubmit} variant="contained">
+      Soumettre
+    </Button>
+  </DialogActions>
+</Dialog>
+</Container>
+<Snackbar
   open={snackbarOpen}
   autoHideDuration={snackbarDuration}
   onClose={handleCloseSnackbar}
-  anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // This makes it more visible
+  anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Pour une meilleure visibilité
 >
   <Alert 
     onClose={handleCloseSnackbar}
@@ -1155,8 +1009,6 @@ const handleDeleteRoom = async (id: number) => {
     {snackbarMessage}
   </Alert>
 </Snackbar>
-    </ProtectedRoute>
-
-  );
-  
+</ProtectedRoute>
+);
 }

@@ -50,6 +50,7 @@ export interface User {
   export interface RoomRequest {
     id: number;
     room: Room;
+    classe: Classe;
     professor: Professor;
     student: Student;
     dayOfWeek: string;

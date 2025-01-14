@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, Table, TableHead, TableRow, TableCell, TableBody, TextField, Button } from '@mui/material';
 import { sortData, searchData } from './SortAndSearchUtils';
+import { Schedule } from '@/types';
 
 interface SchedulesTableProps {
   schedules: any[];
@@ -13,10 +14,9 @@ interface SchedulesTableProps {
   onDelete: (id: number) => void;
 }
 
-const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, sortOrder, searchTerm, onSort, onSearch }) => {
-  const sortedSchedules = sortData(schedules, sortField, sortOrder);
+const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, sortOrder, searchTerm, onSort, onSearch, onEdit, onDelete }) => {
+  const sortedSchedules: Schedule[] = sortData<Schedule>(schedules, sortField, sortOrder);
   const filteredSchedules = searchData(sortedSchedules, searchTerm, ['subject', 'dayOfWeek', 'startTime', 'endTime']);
-
   return (
     <Card>
       <CardContent>
@@ -31,6 +31,8 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, s
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell onClick={() => onSort('classe.name')}>Filière</TableCell>
+              <TableCell onClick={() => onSort('professor.lastName')}>Professeur</TableCell>
               <TableCell onClick={() => onSort('subject')}>Subject</TableCell>
               <TableCell onClick={() => onSort('dayOfWeek')}>Day of Week</TableCell>
               <TableCell onClick={() => onSort('startTime')}>Start Time</TableCell>
@@ -41,14 +43,23 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, s
           <TableBody>
             {filteredSchedules.map((schedule) => (
               <TableRow key={schedule.id}>
+                <TableCell>{schedule.classe?.name || 'N/A'}</TableCell>
+                <TableCell>{schedule.professor?.lastName || 'N/A'}</TableCell>
                 <TableCell>{schedule.subject}</TableCell>
                 <TableCell>{schedule.dayOfWeek}</TableCell>
                 <TableCell>{schedule.startTime}</TableCell>
                 <TableCell>{schedule.endTime}</TableCell>
                 <TableCell>
                   <Button variant="contained" color="primary" size="small">Edit</Button>
-                  <Button variant="contained" color="secondary" size="small">Delete</Button>
-                </TableCell>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={() => onDelete(schedule.id)} // Pass student ID for deletion
+                  >
+                    Delete
+                  </Button>           
+                  </TableCell>
               </TableRow>
             ))}
           </TableBody>
