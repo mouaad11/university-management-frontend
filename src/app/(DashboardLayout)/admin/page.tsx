@@ -10,10 +10,6 @@ fix edit crud on lists
 */
 'use client';
 import React, { useState, useEffect } from 'react';
-import StudentsTable from '../components/dashboard/StudentsTable';
-import ProfessorsTable from '../components/dashboard/ProfessorsTable';
-import SchedulesTable from '../components/dashboard/SchedulesTable';
-import RoomsTable from '../components/dashboard/RoomsTable';
 import TimeTable from '../components/dashboard/TimeTable';
 import {
   Chip,
@@ -44,11 +40,8 @@ import {
 } from '@mui/material';
 import { apiService } from '../../../services/api';
 import type { Room, RoomRequest, Schedule, Student, Professor, Classe, User } from '../../../types';
-import { isClassElement } from 'typescript';
 import ProtectedRoute from '@/app/(DashboardLayout)/components/ProtectedRoute'; // Import the ProtectedRoute component
 import Head from 'next/head';
-
-
 
 // Form types for better type safety
 type ScheduleForm = Omit<Schedule, 'id' | 'professor' | 'room' | 'classe'> & {
