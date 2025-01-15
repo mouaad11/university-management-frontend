@@ -20,9 +20,9 @@ const RoomsTable: React.FC<RoomsTableProps> = ({ rooms, sortField, sortOrder, se
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>Rooms</Typography>
+        <Typography variant="h6" gutterBottom>Salles</Typography>
         <TextField
-          label="Search Rooms"
+          label="Rechercher des Salles"
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
           fullWidth
@@ -31,8 +31,8 @@ const RoomsTable: React.FC<RoomsTableProps> = ({ rooms, sortField, sortOrder, se
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell onClick={() => onSort('roomNumber')}>Room Number</TableCell>
-              <TableCell onClick={() => onSort('building')}>Building</TableCell>
+              <TableCell onClick={() => onSort('roomNumber')}>Numéro de Salle</TableCell>
+              <TableCell onClick={() => onSort('building')}>Bâtiment</TableCell>
               <TableCell onClick={() => onSort('type')}>Type</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -44,14 +44,14 @@ const RoomsTable: React.FC<RoomsTableProps> = ({ rooms, sortField, sortOrder, se
                 <TableCell>{room.building}</TableCell>
                 <TableCell>{room.type}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" size="small">Edit</Button>
+                  <Button variant="contained" color="primary" size="small">Modifier</Button>
                   <Button
                     variant="contained"
                     color="secondary"
                     size="small"
-                    onClick={() => onDelete(room.id)} // Pass student ID for deletion
+                    onClick={() => onDelete(room.id)} // Passer l'ID de la salle pour suppression
                   >
-                    Delete
+                    Supprimer
                   </Button> 
                 </TableCell>
               </TableRow>

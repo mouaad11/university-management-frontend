@@ -20,9 +20,9 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, s
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>Schedules</Typography>
+        <Typography variant="h6" gutterBottom>Emplois du Temps</Typography>
         <TextField
-          label="Search Schedules"
+          label="Rechercher des Emplois du Temps"
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
           fullWidth
@@ -33,10 +33,10 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, s
             <TableRow>
               <TableCell onClick={() => onSort('classe.name')}>Filière</TableCell>
               <TableCell onClick={() => onSort('professor.lastName')}>Professeur</TableCell>
-              <TableCell onClick={() => onSort('subject')}>Subject</TableCell>
-              <TableCell onClick={() => onSort('dayOfWeek')}>Day of Week</TableCell>
-              <TableCell onClick={() => onSort('startTime')}>Start Time</TableCell>
-              <TableCell onClick={() => onSort('endTime')}>End Time</TableCell>
+              <TableCell onClick={() => onSort('subject')}>Matière</TableCell>
+              <TableCell onClick={() => onSort('dayOfWeek')}>Jour de la Semaine</TableCell>
+              <TableCell onClick={() => onSort('startTime')}>Heure de Début</TableCell>
+              <TableCell onClick={() => onSort('endTime')}>Heure de Fin</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -50,16 +50,16 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({ schedules, sortField, s
                 <TableCell>{schedule.startTime}</TableCell>
                 <TableCell>{schedule.endTime}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" size="small">Edit</Button>
+                  <Button variant="contained" color="primary" size="small">Modifier</Button>
                   <Button
                     variant="contained"
                     color="secondary"
                     size="small"
-                    onClick={() => onDelete(schedule.id)} // Pass student ID for deletion
+                    onClick={() => onDelete(schedule.id)} // Passer l'ID de l'emploi du temps pour suppression
                   >
-                    Delete
+                    Supprimer
                   </Button>           
-                  </TableCell>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -29,9 +29,9 @@ const StudentsTable: React.FC<StudentsTableProps> = ({
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>Students</Typography>
+        <Typography variant="h6" gutterBottom>Étudiants</Typography>
         <TextField
-          label="Search Students"
+          label="Rechercher des Étudiants"
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
           fullWidth
@@ -40,10 +40,10 @@ const StudentsTable: React.FC<StudentsTableProps> = ({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell onClick={() => onSort('firstName')}>First Name</TableCell>
-              <TableCell onClick={() => onSort('lastName')}>Last Name</TableCell>
+              <TableCell onClick={() => onSort('firstName')}>Prénom</TableCell>
+              <TableCell onClick={() => onSort('lastName')}>Nom</TableCell>
               <TableCell onClick={() => onSort('email')}>Email</TableCell>
-              <TableCell onClick={() => onSort('studentId')}>Student ID</TableCell>
+              <TableCell onClick={() => onSort('studentId')}>Identifiant Étudiant</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -59,17 +59,17 @@ const StudentsTable: React.FC<StudentsTableProps> = ({
                     variant="contained"
                     color="primary"
                     size="small"
-                    onClick={() => onEdit(student.id, student)} // Pass student data for editing
+                    onClick={() => onEdit(student.id, student)} // Passer les données de l'étudiant pour modification
                   >
-                    Edit
+                    Modifier
                   </Button>
                   <Button
                     variant="contained"
                     color="secondary"
                     size="small"
-                    onClick={() => onDelete(student.id)} // Pass student ID for deletion
+                    onClick={() => onDelete(student.id)} // Passer l'ID de l'étudiant pour suppression
                   >
-                    Delete
+                    Supprimer
                   </Button>
                 </TableCell>
               </TableRow>

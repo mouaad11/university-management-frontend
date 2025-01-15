@@ -34,7 +34,7 @@ const TimeTable = ({ schedules }: { schedules: Schedule[] }) => {
             <Card>
                 <CardContent>
                     <Typography variant="h6" gutterBottom>
-                        Room Timetable
+                        Ocuppation des salles
                     </Typography>
                     <Table>
                         <TableHead>

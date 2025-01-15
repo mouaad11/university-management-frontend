@@ -20,9 +20,9 @@ const ProfessorsTable: React.FC<ProfessorsTableProps> = ({ professors, sortField
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>Professors</Typography>
+        <Typography variant="h6" gutterBottom>Professeurs</Typography>
         <TextField
-          label="Search Professors"
+          label="Rechercher des Professeurs"
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
           fullWidth
@@ -31,10 +31,10 @@ const ProfessorsTable: React.FC<ProfessorsTableProps> = ({ professors, sortField
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell onClick={() => onSort('firstName')}>First Name</TableCell>
-              <TableCell onClick={() => onSort('lastName')}>Last Name</TableCell>
+              <TableCell onClick={() => onSort('firstName')}>Prénom</TableCell>
+              <TableCell onClick={() => onSort('lastName')}>Nom</TableCell>
               <TableCell onClick={() => onSort('email')}>Email</TableCell>
-              <TableCell onClick={() => onSort('department')}>Department</TableCell>
+              <TableCell onClick={() => onSort('department')}>Département</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -46,14 +46,14 @@ const ProfessorsTable: React.FC<ProfessorsTableProps> = ({ professors, sortField
                 <TableCell>{professor.email}</TableCell>
                 <TableCell>{professor.department}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="primary" size="small">Edit</Button>
+                  <Button variant="contained" color="primary" size="small">Modifier</Button>
                   <Button
                     variant="contained"
                     color="secondary"
                     size="small"
-                    onClick={() => onDelete(professor.id)} // Pass student ID for deletion
+                    onClick={() => onDelete(professor.id)} // Passer l'ID du professeur pour la suppression
                   >
-                    Delete
+                    Supprimer
                   </Button> 
                 </TableCell>
               </TableRow>
